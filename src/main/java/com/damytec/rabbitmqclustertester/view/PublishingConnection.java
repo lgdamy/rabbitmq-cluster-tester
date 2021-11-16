@@ -121,8 +121,10 @@ public class PublishingConnection extends Observable implements DisposableBean {
         try {
             Assert.notNull(template.execute(channel -> channel.getConnection().getServerProperties().get("version")));
             healthLabel.setText("UP");
+            healthLabel.setForeground(Color.BLUE);
         } catch ( Exception e) {
             healthLabel.setText("DOWN");
+            healthLabel.setForeground(Color.RED);
         }
     }
 

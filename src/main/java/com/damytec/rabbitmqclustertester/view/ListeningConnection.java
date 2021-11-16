@@ -2,14 +2,18 @@ package com.damytec.rabbitmqclustertester.view;
 
 import com.damytec.rabbitmqclustertester.pojo.ConnectionPojo;
 import com.damytec.rabbitmqclustertester.ui.CustomButton;
+import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -72,13 +76,15 @@ public class ListeningConnection extends Observable implements DisposableBean {
         container.setExclusive(exclusive);
         container.setAutoDeclare(true);
         container.setAutoStartup(true);
-        container.setMessageListener(message -> {
+        container.setMessageListener((message -> {
             log.info("recebendo mensagem");
             mensagens ++;
             broadcast();
             amountLabel.setText(String.format("%d",mensagens));
-        });
-        new RabbitAdmin(connection).declareQueue(QueueBuilder.nonDurable(fila).build());
+        }));
+        try {
+            new RabbitAdmin(connection).declareQueue(QueueBuilder.nonDurable(fila).build());
+        } catch (Exception ignored){}
         container.start();
         this.container = container;
     }
@@ -126,7 +132,13 @@ public class ListeningConnection extends Observable implements DisposableBean {
     }
 
     public void health() {
-        healthLabel.setText(container.getActiveConsumerCount() > 0 ? "UP" : "DOWN");
+        if (container.getActiveConsumerCount() > 0) {
+            healthLabel.setText("UP");
+            healthLabel.setForeground(Color.BLUE);
+        } else {
+            healthLabel.setText("DOWN");
+            healthLabel.setForeground(Color.RED);
+        }
     }
 
     public void broadcast() {
