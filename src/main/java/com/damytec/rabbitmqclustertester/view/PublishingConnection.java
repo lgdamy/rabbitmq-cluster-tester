@@ -2,6 +2,7 @@ package com.damytec.rabbitmqclustertester.view;
 
 import com.damytec.rabbitmqclustertester.pojo.ConnectionPojo;
 import com.damytec.rabbitmqclustertester.ui.CustomButton;
+import org.codehaus.plexus.util.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.DirectExchange;
@@ -64,20 +65,26 @@ public class PublishingConnection extends Observable implements DisposableBean {
         confirmsCheckbox.setSelected(pojo.isConfirms());
         returnsCheckbox.setSelected(pojo.isReturns());
         publicarButton.addActionListener(e -> {
-            template.invoke(op -> {
-                CorrelationData correlation = new CorrelationData(UUID.randomUUID().toString());
-                op.convertAndSend("teste", (message -> {
-                    log.info("enviando mensagem");
-                    return message;
-                }), correlation);
-                if (pojo.isConfirms()) {
-                    op.waitForConfirmsOrDie(5000L);
-                }
-                if (pojo.isReturns()) {
-                    Assert.state(correlation.getReturnedMessage() == null, () -> "Message returned");
-                }
-                return op;
-            });
+            try {
+                template.invoke(op -> {
+                    CorrelationData correlation = new CorrelationData(UUID.randomUUID().toString());
+                    op.convertAndSend("teste", (message -> {
+                        log.info("enviando mensagem");
+                        return message;
+                    }), correlation);
+                    if (pojo.isConfirms()) {
+                        op.waitForConfirmsOrDie(5000L);
+                    }
+                    if (pojo.isReturns()) {
+                        Assert.state(correlation.getReturnedMessage() == null, () -> "Message returned");
+                    }
+                    return op;
+                });
+                broadcast();
+            } catch (Throwable ex) {
+                log.error("[{}] {}", ex.getClass().getSimpleName(), ex.getMessage());
+                broadcast(ex);
+            }
         });
         if (pojo.isReturns()) {
             template.setReturnCallback((message, i, s, s1, s2) -> log.error("[{}] {}", i, s));
@@ -117,5 +124,15 @@ public class PublishingConnection extends Observable implements DisposableBean {
         } catch ( Exception e) {
             healthLabel.setText("DOWN");
         }
+    }
+
+    private void broadcast(Throwable error) {
+        this.setChanged();
+        this.notifyObservers(error);
+    }
+
+    private void broadcast() {
+        this.setChanged();
+        this.notifyObservers("increment");
     }
 }

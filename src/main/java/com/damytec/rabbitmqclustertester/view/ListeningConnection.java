@@ -70,13 +70,15 @@ public class ListeningConnection extends Observable implements DisposableBean {
         SimpleMessageListenerContainer container = containerFactory().createListenerContainer();
         container.setQueueNames(fila);
         container.setExclusive(exclusive);
+        container.setAutoDeclare(true);
+        container.setAutoStartup(true);
         container.setMessageListener(message -> {
             log.info("recebendo mensagem");
             mensagens ++;
+            broadcast();
             amountLabel.setText(String.format("%d",mensagens));
         });
-        RabbitAdmin admin = new RabbitAdmin(connection);
-        admin.declareQueue(QueueBuilder.nonDurable(fila).build());
+        new RabbitAdmin(connection).declareQueue(QueueBuilder.nonDurable(fila).build());
         container.start();
         this.container = container;
     }
@@ -125,5 +127,10 @@ public class ListeningConnection extends Observable implements DisposableBean {
 
     public void health() {
         healthLabel.setText(container.getActiveConsumerCount() > 0 ? "UP" : "DOWN");
+    }
+
+    public void broadcast() {
+        this.setChanged();
+        this.notifyObservers("increment");
     }
 }
