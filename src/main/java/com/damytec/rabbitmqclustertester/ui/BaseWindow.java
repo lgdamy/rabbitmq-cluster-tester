@@ -21,7 +21,7 @@ public class BaseWindow extends JFrame {
 
     private int windowWidth;
     private int windowHeight;
-    private static final String DEFAULT_TITLE = "RabbitMQ Cluster Tester";
+    private static final String DEFAULT_TITLE = String.format("RabbitMQ Cluster Tester - %s", BaseWindow.class.getPackage().getImplementationVersion());
 
     public BaseWindow(ContentForm form, Integer windowWidth, Integer windowHeight) {
         this.windowWidth = windowWidth == null ? (int) this.getScreenDimension().getWidth() / 2 : windowWidth;

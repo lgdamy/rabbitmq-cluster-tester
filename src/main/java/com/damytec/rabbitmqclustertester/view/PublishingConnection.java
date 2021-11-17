@@ -36,11 +36,16 @@ public class PublishingConnection extends Observable implements DisposableBean {
     private JLabel filaLabel;
     private JPanel panel;
     private JLabel healthLabel;
+    private JLabel confirmsLabel;
+    private JLabel returnsLabel;
+    private JLabel amountLabel;
 
     private boolean destroyed;
 
     private final ConnectionFactory connection;
     private final RabbitTemplate template;
+
+    private int mensagens = 0;
 
     public PublishingConnection(ConnectionPojo pojo) {
         CachingConnectionFactory connection = new CachingConnectionFactory();
@@ -60,10 +65,14 @@ public class PublishingConnection extends Observable implements DisposableBean {
         template.setMandatory(pojo.isReturns());
         template.setExchange(DirectExchange.DEFAULT.getName());
         template.setRoutingKey(pojo.getFila());
-        hostLabel.setText(pojo.getHost());
-        vhostLabel.setText(pojo.getVhost());
-        confirmsCheckbox.setSelected(pojo.isConfirms());
-        returnsCheckbox.setSelected(pojo.isReturns());
+        hostLabel.setText(String.format("host: %s", pojo.getHost()));
+        hostLabel.setToolTipText(pojo.getHost());
+        vhostLabel.setText(String.format("v-host: %s", pojo.getVhost()));
+        vhostLabel.setToolTipText(pojo.getVhost());
+        confirmsLabel.setVisible(pojo.isConfirms());
+        returnsLabel.setVisible(pojo.isReturns());
+        filaLabel.setText(pojo.getFila());
+        filaLabel.setToolTipText(pojo.getFila());
         publicarButton.addActionListener(e -> {
             try {
                 template.invoke(op -> {
@@ -80,6 +89,7 @@ public class PublishingConnection extends Observable implements DisposableBean {
                     }
                     return op;
                 });
+                amountLabel.setText(String.format("mensagens: %d", ++mensagens));
                 broadcast();
             } catch (Throwable ex) {
                 log.error("[{}] {}", ex.getClass().getSimpleName(), ex.getMessage());
@@ -89,7 +99,6 @@ public class PublishingConnection extends Observable implements DisposableBean {
         if (pojo.isReturns()) {
             template.setReturnCallback((message, i, s, s1, s2) -> log.error("[{}] {}", i, s));
         }
-        filaLabel.setText(pojo.getFila());
     }
 
     private void createUIComponents() {
@@ -109,6 +118,7 @@ public class PublishingConnection extends Observable implements DisposableBean {
     public void destroy() {
         destroyed = true;
         this.template.stop();
+        this.connection.clearConnectionListeners();
         setChanged();
         this.notifyObservers("destroy");
     }

@@ -2,18 +2,16 @@ package com.damytec.rabbitmqclustertester.view;
 
 import com.damytec.rabbitmqclustertester.pojo.ConnectionPojo;
 import com.damytec.rabbitmqclustertester.ui.CustomButton;
-import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionListener;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -33,21 +31,24 @@ public class ListeningConnection extends Observable implements DisposableBean {
     private JPanel panel;
     private JLabel hostLabel;
     private JLabel vhostLabel;
-    private JCheckBox exclusiveCheckbox;
     private JLabel filaLabel;
     private JLabel amountLabel;
     private JLabel closeConnectionButton;
     private JLabel healthLabel;
+    private JLabel exclusiveLabel;
 
     private boolean destroyed = false;
 
     private boolean exclusive;
     private String fila;
-    private Integer mensagens = 0;
+    private int mensagens = 0;
 
     private final ConnectionFactory connection;
 
     private SimpleMessageListenerContainer container;
+
+    private static final Dimension LABEL_MAXIMUM_SIZE = new Dimension(100, 12);
+    private static final Dimension QUEUE_MAXIMUM_SIZE = new Dimension(190, 12);
 
     public ListeningConnection(ConnectionPojo pojo) {
         CachingConnectionFactory connection = new CachingConnectionFactory();
@@ -61,10 +62,13 @@ public class ListeningConnection extends Observable implements DisposableBean {
         connection.setUsername(pojo.getUsername());
         connection.setPassword(pojo.getPassword());
         this.connection = connection;
-        hostLabel.setText(pojo.getHost());
-        vhostLabel.setText(pojo.getVhost());
-        exclusiveCheckbox.setSelected(pojo.isExclusive());
+        hostLabel.setText(String.format("host: %s",pojo.getHost()));
+        hostLabel.setToolTipText(pojo.getHost());
+        vhostLabel.setText(String.format("v-host: %s",pojo.getVhost()));
+        vhostLabel.setToolTipText(pojo.getVhost());
         filaLabel.setText(pojo.getFila());
+        filaLabel.setToolTipText(pojo.getFila());
+        exclusiveLabel.setVisible(pojo.isExclusive());
         exclusive = pojo.isExclusive();
         fila = pojo.getFila();
     }
@@ -78,9 +82,8 @@ public class ListeningConnection extends Observable implements DisposableBean {
         container.setAutoStartup(true);
         container.setMessageListener((message -> {
             log.info("recebendo mensagem");
-            mensagens ++;
+            amountLabel.setText(String.format("mensagens: %d",++mensagens));
             broadcast();
-            amountLabel.setText(String.format("%d",mensagens));
         }));
         try {
             new RabbitAdmin(connection).declareQueue(QueueBuilder.nonDurable(fila).build());
@@ -110,6 +113,7 @@ public class ListeningConnection extends Observable implements DisposableBean {
     public void destroy() {
         destroyed = true;
         this.container.stop();
+        connection.clearConnectionListeners();
         setChanged();
         notifyObservers("destroy");
     }
@@ -141,8 +145,9 @@ public class ListeningConnection extends Observable implements DisposableBean {
         }
     }
 
-    public void broadcast() {
+    private void broadcast() {
         this.setChanged();
         this.notifyObservers("increment");
     }
+
 }

@@ -12,129 +12,98 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="97335" class="javax.swing.JLabel">
+          <component id="92ea9" class="javax.swing.JLabel" binding="filaLabel">
             <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-              <gridbag top="0" left="2" bottom="0" right="0" weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <text value="host: "/>
-            </properties>
-          </component>
-          <component id="1724a" class="javax.swing.JLabel" binding="hostLabel">
-            <constraints>
-              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
               <gridbag weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
-              <text value=""/>
-            </properties>
-          </component>
-          <component id="c6663" class="javax.swing.JLabel">
-            <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-              <gridbag top="0" left="2" bottom="0" right="0" weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <text value="v-host: "/>
+              <font style="2"/>
+              <foreground color="-8888872"/>
+              <horizontalAlignment value="0"/>
+              <text value="fila"/>
             </properties>
           </component>
           <component id="c6e42" class="javax.swing.JLabel" binding="vhostLabel">
             <constraints>
-              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
               <gridbag weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
-              <text value=""/>
+              <horizontalAlignment value="0"/>
+              <text value="vhost"/>
             </properties>
           </component>
-          <component id="b27eb" class="javax.swing.JLabel">
+          <component id="1724a" class="javax.swing.JLabel" binding="hostLabel">
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-              <gridbag top="0" left="2" bottom="0" right="0" weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <text value="confirms: "/>
-            </properties>
-          </component>
-          <component id="e09e9" class="javax.swing.JCheckBox" binding="confirmsCheckbox">
-            <constraints>
-              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
               <gridbag weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
-              <enabled value="false"/>
-              <text value=""/>
+              <horizontalAlignment value="0"/>
+              <text value="host"/>
             </properties>
           </component>
-          <component id="4f84f" class="javax.swing.JLabel">
+          <component id="8d82e" class="javax.swing.JLabel" binding="confirmsLabel">
             <constraints>
-              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-              <gridbag top="0" left="2" bottom="0" right="0" weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <text value="returns: "/>
-            </properties>
-          </component>
-          <component id="caa47" class="javax.swing.JCheckBox" binding="returnsCheckbox">
-            <constraints>
-              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-              <gridbag weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <enabled value="false"/>
-              <text value=""/>
-            </properties>
-          </component>
-          <component id="92ea9" class="javax.swing.JLabel" binding="filaLabel">
-            <constraints>
-              <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-              <gridbag weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <text value=""/>
-            </properties>
-          </component>
-          <component id="1522d" class="javax.swing.JLabel">
-            <constraints>
-              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-              <gridbag weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties>
-              <text value="health: "/>
-            </properties>
-          </component>
-          <component id="f7659" class="javax.swing.JLabel" binding="healthLabel">
-            <constraints>
-              <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
               <gridbag weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
               <font style="1"/>
-              <text value=" - "/>
-            </properties>
-          </component>
-        </children>
-      </grid>
-      <grid id="bbf70" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
-        <constraints border-constraint="North"/>
-        <properties/>
-        <border type="none"/>
-        <children>
-          <component id="d55d9" class="javax.swing.JLabel">
-            <constraints/>
-            <properties>
-              <font size="18" style="1"/>
               <horizontalAlignment value="0"/>
-              <text value="Publisher"/>
+              <text value="confirms"/>
             </properties>
           </component>
-          <component id="dd529" class="javax.swing.JLabel" binding="closeConnectionButton" custom-create="true">
-            <constraints/>
+          <component id="94faf" class="javax.swing.JLabel" binding="returnsLabel">
+            <constraints>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
             <properties>
-              <text value=""/>
+              <font style="1"/>
+              <horizontalAlignment value="0"/>
+              <text value="returns"/>
             </properties>
           </component>
+          <component id="aba46" class="javax.swing.JSeparator">
+            <constraints>
+              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="1.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <minimumSize width="1" height="3"/>
+            </properties>
+          </component>
+          <vspacer id="eb794">
+            <constraints>
+              <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="1.0"/>
+            </constraints>
+          </vspacer>
+          <vspacer id="b2284">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="1.0"/>
+            </constraints>
+          </vspacer>
+          <component id="7a370" class="javax.swing.JLabel" binding="amountLabel">
+            <constraints>
+              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <horizontalAlignment value="0"/>
+              <horizontalTextPosition value="0"/>
+              <text value="mensagens: 0"/>
+            </properties>
+          </component>
+          <vspacer id="ea3a3">
+            <constraints>
+              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="1.0"/>
+            </constraints>
+          </vspacer>
         </children>
       </grid>
       <component id="76116" class="javax.swing.JButton" binding="publicarButton" default-binding="true">
@@ -143,6 +112,53 @@
           <text value="Publicar"/>
         </properties>
       </component>
+      <grid id="efd7f" layout-manager="BorderLayout" hgap="0" vgap="0">
+        <constraints border-constraint="North"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <grid id="bbf70" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+            <constraints border-constraint="North"/>
+            <properties>
+              <background color="-865776"/>
+            </properties>
+            <border type="none"/>
+            <children>
+              <component id="d55d9" class="javax.swing.JLabel">
+                <constraints/>
+                <properties>
+                  <font size="18" style="1"/>
+                  <horizontalAlignment value="0"/>
+                  <text value="Publisher"/>
+                </properties>
+              </component>
+              <component id="dd529" class="javax.swing.JLabel" binding="closeConnectionButton" custom-create="true">
+                <constraints/>
+                <properties>
+                  <text value=""/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+          <grid id="8b68e" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints border-constraint="South"/>
+            <properties>
+              <background color="-2575600"/>
+            </properties>
+            <border type="none"/>
+            <children>
+              <component id="f7659" class="javax.swing.JLabel" binding="healthLabel">
+                <constraints border-constraint="Center"/>
+                <properties>
+                  <font style="1"/>
+                  <horizontalAlignment value="0"/>
+                  <text value=" - "/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+        </children>
+      </grid>
     </children>
   </grid>
 </form>
