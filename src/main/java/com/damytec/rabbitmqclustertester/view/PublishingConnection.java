@@ -25,7 +25,7 @@ import java.util.UUID;
  */
 @Component
 @Scope("prototype")
-public class PublishingConnection extends Observable implements DisposableBean {
+public class PublishingConnection extends RabbitConnectionComponent {
     private static Logger log = LoggerFactory.getLogger(PublishingConnection.class);
     private JLabel hostLabel;
     private JLabel vhostLabel;
@@ -40,28 +40,15 @@ public class PublishingConnection extends Observable implements DisposableBean {
     private JLabel returnsLabel;
     private JLabel amountLabel;
 
-    private boolean destroyed;
-
-    private final ConnectionFactory connection;
     private final RabbitTemplate template;
 
     private int mensagens = 0;
 
     public PublishingConnection(ConnectionPojo pojo) {
-        CachingConnectionFactory connection = new CachingConnectionFactory();
-        if (pojo.getHost().contains(":")) {
-            connection.setHost(pojo.getHost().split(":")[0]);
-            connection.setPort(Integer.parseInt(pojo.getHost().split(":")[1]));
-        } else {
-            connection.setHost(pojo.getHost());
-        }
-        connection.setVirtualHost(pojo.getVhost());
-        connection.setUsername(pojo.getUsername());
-        connection.setPassword(pojo.getPassword());
-        connection.setPublisherConfirms(pojo.isConfirms());
-        connection.setPublisherReturns(pojo.isReturns());
-        this.connection = connection;
-        template = new RabbitTemplate(connection);
+        super(pojo);
+        connectionFactory.setPublisherReturns(pojo.isReturns());
+        connectionFactory.setPublisherConfirms(pojo.isConfirms());
+        template = new RabbitTemplate(connectionFactory);
         template.setMandatory(pojo.isReturns());
         template.setExchange(DirectExchange.DEFAULT.getName());
         template.setRoutingKey(pojo.getFila());
@@ -116,15 +103,8 @@ public class PublishingConnection extends Observable implements DisposableBean {
 
     @Override
     public void destroy() {
-        destroyed = true;
+        super.destroy();
         this.template.stop();
-        this.connection.clearConnectionListeners();
-        setChanged();
-        this.notifyObservers("destroy");
-    }
-
-    public boolean isDestroyed() {
-        return destroyed;
     }
 
     public void health() {

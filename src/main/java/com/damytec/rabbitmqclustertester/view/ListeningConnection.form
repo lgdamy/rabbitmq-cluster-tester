@@ -103,7 +103,7 @@
         </properties>
         <border type="none"/>
         <children>
-          <grid id="d87ba" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+          <grid id="d87ba" binding="titlePanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
             <constraints border-constraint="North"/>
             <properties>
               <background color="-7361289"/>
@@ -125,7 +125,7 @@
               </component>
             </children>
           </grid>
-          <grid id="e7ec2" layout-manager="BorderLayout" hgap="0" vgap="0">
+          <grid id="e7ec2" binding="healthPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
             <constraints border-constraint="South"/>
             <properties>
               <background color="-9137959"/>

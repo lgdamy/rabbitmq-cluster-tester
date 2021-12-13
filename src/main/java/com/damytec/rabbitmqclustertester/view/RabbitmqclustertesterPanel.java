@@ -17,7 +17,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -49,16 +48,13 @@ public class RabbitmqclustertesterPanel implements BaseWindow.ContentForm, Appli
 
     private ApplicationContext context;
 
-    private List<PublishingConnection> publishers = new ArrayList<>();
-    private List<ListeningConnection> listeners = new ArrayList<>();
-
+    private List<RabbitConnectionComponent> connections = new ArrayList<>();
 
     @PostConstruct
     public void setup() {
         new BaseWindow(this, 800, 600);
         new Timer(5000, e -> {
-            publishers.stream().forEach(PublishingConnection::health);
-            listeners.stream().forEach(ListeningConnection::health);
+            connections.stream().forEach(RabbitConnectionComponent::health);
         }).start();
     }
 
@@ -66,7 +62,7 @@ public class RabbitmqclustertesterPanel implements BaseWindow.ContentForm, Appli
         root.add(connectionsPannel, BorderLayout.CENTER);
         criarPublisherButton.addActionListener(this::createConnection);
         criarListenerButton.addActionListener(this::createConnection);
-        addConnections();
+        drawConnections();
     }
 
     @Override
@@ -79,34 +75,15 @@ public class RabbitmqclustertesterPanel implements BaseWindow.ContentForm, Appli
         connectionsPannel.setVisible(true);
     }
 
-    private void addConnections() {
+    private void drawConnections() {
         connectionsPannel.removeAll();
-        AtomicInteger i = new AtomicInteger(0);
-        publishers.forEach(pub -> {
-            if (pub.isDestroyed()) {
-                pub.deleteObservers();
-            }
-        });
-        listeners.forEach(lis -> {
-            if (lis.isDestroyed()) {
-                lis.deleteObservers();
-            }
-        });
-        publishers.removeIf(PublishingConnection::isDestroyed);
-        listeners.removeIf(ListeningConnection::isDestroyed);
-        publishers.forEach(pub -> {
-            connectionsPannel.add(pub.getPanel());
-            i.incrementAndGet();
-        });
-        listeners.forEach(pub -> {
-            connectionsPannel.add(pub.getPanel());
-            i.incrementAndGet();
-        });
-        while (i.incrementAndGet() <= 8) {
+        connections.stream().map(RabbitConnectionComponent::getPanel).forEach(connectionsPannel::add);
+        int i = 8 - connections.size();
+        while (i-- > 0) {
             connectionsPannel.add(new EmptySlot());
         }
-        listenerCountLabel.setText(String.format("%d", listeners.size()));
-        publisherCountLabel.setText(String.format("%d", publishers.size()));
+        listenerCountLabel.setText(String.format("%d", connections.stream().filter(c -> c instanceof ListeningConnection).count()));
+        publisherCountLabel.setText(String.format("%d", connections.stream().filter(c -> c instanceof PublishingConnection).count()));
         connectionsPannel.revalidate();
         connectionsPannel.repaint();
     }
@@ -131,18 +108,18 @@ public class RabbitmqclustertesterPanel implements BaseWindow.ContentForm, Appli
     }
 
     public void createConnection(ActionEvent e) {
-        if (publishers.size() + listeners.size() >= 8) {
+        if (connections.size() >= 8) {
             Toolkit.getDefaultToolkit().beep();
             return;
         }
         CompletableFuture.supplyAsync(() -> {
-            Observable connection = null;
+            RabbitConnectionComponent connection = null;
             if (e.getSource() == criarListenerButton) {
                 connection = context.getBean(ListeningConnection.class, buildConnectionPojo());
-                listeners.add((ListeningConnection) connection);
+                connections.add(connection);
             } else if (e.getSource() == criarPublisherButton) {
                 connection = context.getBean(PublishingConnection.class, buildConnectionPojo());
-                publishers.add((PublishingConnection) connection);
+                connections.add( connection);
             }
             return connection;
         }).whenComplete((connection, throwable) -> {
@@ -168,10 +145,11 @@ public class RabbitmqclustertesterPanel implements BaseWindow.ContentForm, Appli
                         }
                     }
                     if ("destroy".equals(arg)) {
-                        addConnections();
+                        connections.remove(connection);
+                        drawConnections();
                     }
                 });
-                addConnections();
+                drawConnections();
             }
         });
     }

@@ -6,27 +6,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.connection.Connection;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.connection.ConnectionListener;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.swing.*;
 import java.awt.*;
-import java.util.Observable;
 
 /**
  * @author lgdamy@raiadrogasil.com on 16/11/2021
  */
 @Component
 @Scope("prototype")
-public class ListeningConnection extends Observable implements DisposableBean {
+public class ListeningConnection extends RabbitConnectionComponent {
     private static Logger log = LoggerFactory.getLogger(ListeningConnection.class);
     private JPanel panel;
     private JLabel hostLabel;
@@ -36,32 +30,17 @@ public class ListeningConnection extends Observable implements DisposableBean {
     private JLabel closeConnectionButton;
     private JLabel healthLabel;
     private JLabel exclusiveLabel;
-
-    private boolean destroyed = false;
+    private JPanel titlePanel;
+    private JPanel healthPanel;
 
     private boolean exclusive;
     private String fila;
     private int mensagens = 0;
 
-    private final ConnectionFactory connection;
-
     private SimpleMessageListenerContainer container;
 
-    private static final Dimension LABEL_MAXIMUM_SIZE = new Dimension(100, 12);
-    private static final Dimension QUEUE_MAXIMUM_SIZE = new Dimension(190, 12);
-
     public ListeningConnection(ConnectionPojo pojo) {
-        CachingConnectionFactory connection = new CachingConnectionFactory();
-        if (pojo.getHost().contains(":")) {
-            connection.setHost(pojo.getHost().split(":")[0]);
-            connection.setPort(Integer.parseInt(pojo.getHost().split(":")[1]));
-        } else {
-            connection.setHost(pojo.getHost());
-        }
-        connection.setVirtualHost(pojo.getVhost());
-        connection.setUsername(pojo.getUsername());
-        connection.setPassword(pojo.getPassword());
-        this.connection = connection;
+        super(pojo);
         hostLabel.setText(String.format("host: %s",pojo.getHost()));
         hostLabel.setToolTipText(pojo.getHost());
         vhostLabel.setText(String.format("v-host: %s",pojo.getVhost()));
@@ -86,7 +65,7 @@ public class ListeningConnection extends Observable implements DisposableBean {
             broadcast();
         }));
         try {
-            new RabbitAdmin(connection).declareQueue(QueueBuilder.nonDurable(fila).build());
+            new RabbitAdmin(connectionFactory).declareQueue(QueueBuilder.nonDurable(fila).build());
         } catch (Exception ignored){}
         container.start();
         this.container = container;
@@ -94,13 +73,9 @@ public class ListeningConnection extends Observable implements DisposableBean {
 
     public SimpleRabbitListenerContainerFactory containerFactory() {
         SimpleRabbitListenerContainerFactory containerFactory = new SimpleRabbitListenerContainerFactory();
-        containerFactory.setConnectionFactory(connection);
-        containerFactory.setConcurrentConsumers(5);
-        containerFactory.setMaxConcurrentConsumers(10);
-        if (exclusive) {
-            containerFactory.setConcurrentConsumers(1);
-            containerFactory.setMaxConcurrentConsumers(1);
-        }
+        containerFactory.setConnectionFactory(connectionFactory);
+        containerFactory.setConcurrentConsumers(1);
+        containerFactory.setMaxConcurrentConsumers(1);
         containerFactory.setPrefetchCount(1);
         containerFactory.setStartConsumerMinInterval(3_000L);
         containerFactory.setRecoveryInterval(15_000L);
@@ -111,11 +86,8 @@ public class ListeningConnection extends Observable implements DisposableBean {
 
     @Override
     public void destroy() {
-        destroyed = true;
+        super.destroy();
         this.container.stop();
-        connection.clearConnectionListeners();
-        setChanged();
-        notifyObservers("destroy");
     }
 
     private void createUIComponents() {
@@ -129,10 +101,6 @@ public class ListeningConnection extends Observable implements DisposableBean {
 
     public JPanel getPanel() {
         return panel;
-    }
-
-    public boolean isDestroyed() {
-        return destroyed;
     }
 
     public void health() {
@@ -149,5 +117,6 @@ public class ListeningConnection extends Observable implements DisposableBean {
         this.setChanged();
         this.notifyObservers("increment");
     }
+
 
 }
